@@ -3,6 +3,9 @@ package ru.javawebinar.topjava.model;
 import java.time.LocalDateTime;
 
 public class MealWithExceed {
+
+    private int id;
+
     private  LocalDateTime dateTime;
 
     private final String description;
@@ -42,5 +45,13 @@ public class MealWithExceed {
                 ", calories=" + calories +
                 ", exceed=" + exceed +
                 '}';
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }

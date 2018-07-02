@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 
@@ -22,7 +24,7 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        List<MealWithExceed> mealWithExceeds = MealsUtil.getCaloriesByFullDayFilteredWithExceededByCycle(MealsUtil.initMeal(), 2000);
+        List<MealWithExceed> mealWithExceeds = MealsUtil.getFilteredWithExceededByCycle(MealsUtil.initStaticData(), LocalTime.MIN, LocalTime.MAX , 2000);
         req.setAttribute("mealListWithExceed",mealWithExceeds);
 
         req.getRequestDispatcher("meals.jsp").forward(req,resp);
