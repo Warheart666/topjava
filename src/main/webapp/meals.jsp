@@ -5,7 +5,7 @@
   Time: 12:38
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib uri="http://sargue.net/jsptags/time" prefix="javatime" %>
 <html>
@@ -20,6 +20,7 @@
         <th>Дата</th>
         <th>Описание</th>
         <th>Калорийность</th>
+        <th></th>
     </tr>
     <c:forEach var="mealWithExceed" items="${mealListWithExceed}">
         <tr style="background: ${mealWithExceed.exceed ? 'red' : 'green'}">
@@ -33,8 +34,15 @@
             <td>
                 <c:out value="${mealWithExceed.calories}"/>
             </td>
+
+            <td colspan="2"><a
+                    href="mealList?action=edit&mealId=<c:out value="${mealWithExceed.id}"/>">Редактировать</a></td>
         </tr>
+
+
     </c:forEach>
+
 </table>
+
 </body>
 </html>
