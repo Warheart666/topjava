@@ -3,24 +3,23 @@ package ru.javawebinar.topjava.crud;
 import ru.javawebinar.topjava.model.Meal;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class MealInMemCrudImpl implements Crud<Meal, Integer> {
+public class MealInMemCrudImpl implements Crud<Meal> {
 
 
-    private static int seq = 1;
-    private static Map<Integer, Meal> storage = new HashMap();
+    private static AtomicInteger seq = new AtomicInteger();
+    private static ConcurrentMap<Integer,Meal> storage = new ConcurrentHashMap();
 
     @Override
-    public synchronized Meal create(Meal meal) {
+    public Meal create(Meal meal) {
 
         if (meal != null && meal.getId() == 0) {
-            meal.setId(seq);
-            storage.putIfAbsent(seq, meal);
-            seq++;
+            meal.setId(seq.incrementAndGet());
+            storage.putIfAbsent(seq.get(), meal);
         }
 
         return meal;
@@ -38,7 +37,9 @@ public class MealInMemCrudImpl implements Crud<Meal, Integer> {
 
     @Override
     public void delete(Meal meal) {
-
+        if (meal != null && meal.getId() != 0) {
+            storage.remove(meal.getId());
+        }
     }
 
     @Override

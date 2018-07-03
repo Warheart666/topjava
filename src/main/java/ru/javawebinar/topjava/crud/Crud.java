@@ -2,11 +2,11 @@ package ru.javawebinar.topjava.crud;
 
 import java.util.List;
 
-public interface Crud<T, Id extends Integer> {
+public interface Crud<T> {
 
     T create(T t);
 
-    T read(Id id);
+    T read(Integer id);
 
     T update(T t);
 

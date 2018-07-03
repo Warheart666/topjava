@@ -21,8 +21,8 @@
     <br/>
     Описание : <input type="text" name="description" value="<c:out value="${meal.description}"/>"/>
     <br/>
-    Дата/время : <input type="datetime-local" name="dateTime"
-                        value="<javatime:format pattern="dd.MM.yyyy hh:mm" value="${meal.dateTime}" style="MS"/>"/>
+    Дата/время : <input type="text" name="dateTime"
+                        value="<javatime:format value="${meal.dateTime}" style="MS"/>"/>
     <br/>
     Калории : <input type="text" name="calories" value="<c:out value="${meal.calories}"/>"/> <br/>
 

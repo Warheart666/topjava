@@ -3,18 +3,17 @@ package ru.javawebinar.topjava.crud;
 import ru.javawebinar.topjava.model.MealWithExceed;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
-public class MealWithExceedInMemCrudImpl implements Crud<MealWithExceed, Integer> {
+public class MealWithExceedInMemCrudImpl implements Crud<MealWithExceed> {
 
 
-    private static Map<Integer, MealWithExceed> storage = new HashMap();
+    private static ConcurrentMap<Integer, MealWithExceed> storage = new ConcurrentHashMap<>();
 
     @Override
-    public synchronized MealWithExceed create(MealWithExceed mealWithExceed) {
+    public MealWithExceed create(MealWithExceed mealWithExceed) {
 
         storage.putIfAbsent(mealWithExceed.getId(), mealWithExceed);
         return mealWithExceed;

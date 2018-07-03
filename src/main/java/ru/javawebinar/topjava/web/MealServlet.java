@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 
@@ -24,16 +25,14 @@ import java.util.List;
 public class MealServlet extends HttpServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(MealServlet.class);
-
-    //    private List<Meal> mealList = null;
-    private Crud<Meal, Integer> mealServletDao = new MealInMemCrudImpl();
+    private Crud<Meal> mealServletDao = new MealInMemCrudImpl();
 
 
-    public MealServlet() {
-        super();
+    @Override
+    public void init() throws ServletException {
+        super.init();
         MealsUtil.initStaticData().forEach(meal -> mealServletDao.create(meal));
     }
-
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -44,11 +43,21 @@ public class MealServlet extends HttpServlet {
             List<MealWithExceed> mealWithExceeds = MealsUtil.getFilteredWithExceededByCycle(mealServletDao.getAll(), LocalTime.MIN, LocalTime.MAX, 2000);
             req.setAttribute("mealListWithExceed", mealWithExceeds);
             req.getRequestDispatcher("meals.jsp").forward(req, resp);
-        } else if (action.equalsIgnoreCase("edit")) {
+        } else if (action.equalsIgnoreCase("edit")) { //редактирование
+
             Integer mealId = Integer.parseInt(req.getParameter("mealId"));
             Meal meal = mealServletDao.read(mealId);
             req.setAttribute("meal", meal);
             req.getRequestDispatcher("editMeal.jsp").forward(req, resp);
+        } else if (action.equalsIgnoreCase("insert")) { //создание
+
+            req.getRequestDispatcher("editMeal.jsp").forward(req, resp);
+
+        } else if (action.equalsIgnoreCase("delete")) {
+            Integer mealId = Integer.parseInt(req.getParameter("mealId"));
+            Meal meal = mealServletDao.read(mealId);
+            mealServletDao.delete(meal);
+            resp.sendRedirect("mealList");
         }
 
 
@@ -60,18 +69,30 @@ public class MealServlet extends HttpServlet {
         req.setCharacterEncoding(StandardCharsets.UTF_8.name());
         String action = req.getParameter("action");
 
-        if (action.equalsIgnoreCase("edit")) {
+        if (action.equalsIgnoreCase("edit")) { //редактирование
 
             String desc = req.getParameter("description");
             int cal = Integer.parseInt(req.getParameter("calories"));
-            LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("dateTime"));
 
+            LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("dateTime"), DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
             Meal meal = new Meal(dateTime, desc, cal);
             meal.setId(Integer.parseInt(req.getParameter("mealId")));
 
             mealServletDao.update(meal);
-            resp.sendRedirect("/mealList");
+            resp.sendRedirect("mealList");
+
+        } else if (action.equalsIgnoreCase("insert")) {//создание
+
+            String desc = req.getParameter("description");
+            int cal = Integer.parseInt(req.getParameter("calories"));
+            LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("dateTime"), DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+
+            Meal meal = new Meal(dateTime, desc, cal);
+
+            mealServletDao.create(meal);
+            resp.sendRedirect("mealList");
         }
+
 
     }
 }
