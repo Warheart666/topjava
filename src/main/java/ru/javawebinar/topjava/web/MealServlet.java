@@ -79,8 +79,6 @@ public class MealServlet extends HttpServlet {
             meal.setId(Integer.parseInt(req.getParameter("mealId")));
 
             mealServletDao.update(meal);
-            resp.sendRedirect("mealList");
-
         } else if (action.equalsIgnoreCase("insert")) {//создание
 
             String desc = req.getParameter("description");
@@ -88,11 +86,9 @@ public class MealServlet extends HttpServlet {
             LocalDateTime dateTime = LocalDateTime.parse(req.getParameter("dateTime"), DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
 
             Meal meal = new Meal(dateTime, desc, cal);
-
             mealServletDao.create(meal);
-            resp.sendRedirect("mealList");
         }
-
+        resp.sendRedirect("mealList");
 
     }
 }

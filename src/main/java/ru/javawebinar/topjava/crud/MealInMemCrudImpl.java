@@ -11,8 +11,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MealInMemCrudImpl implements Crud<Meal> {
 
 
-    private static AtomicInteger seq = new AtomicInteger();
-    private static ConcurrentMap<Integer,Meal> storage = new ConcurrentHashMap();
+    private  AtomicInteger seq = new AtomicInteger();
+    private  ConcurrentMap<Integer,Meal> storage = new ConcurrentHashMap();
 
     @Override
     public Meal create(Meal meal) {
@@ -31,7 +31,7 @@ public class MealInMemCrudImpl implements Crud<Meal> {
     }
 
     @Override
-    public synchronized Meal update(Meal meal) {
+    public Meal update(Meal meal) {
         return storage.put(meal.getId(), meal);
     }
 
