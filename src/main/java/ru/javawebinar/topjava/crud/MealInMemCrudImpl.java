@@ -12,7 +12,7 @@ public class MealInMemCrudImpl implements Crud<Meal> {
 
 
     private  AtomicInteger seq = new AtomicInteger();
-    private  ConcurrentMap<Integer,Meal> storage = new ConcurrentHashMap();
+    private  ConcurrentMap<Integer,Meal> storage = new ConcurrentHashMap<>();
 
     @Override
     public Meal create(Meal meal) {
@@ -20,9 +20,10 @@ public class MealInMemCrudImpl implements Crud<Meal> {
         if (meal != null && meal.getId() == 0) {
             meal.setId(seq.incrementAndGet());
             storage.putIfAbsent(seq.get(), meal);
+            return meal;
         }
+        else return null;
 
-        return meal;
     }
 
     @Override
@@ -32,7 +33,13 @@ public class MealInMemCrudImpl implements Crud<Meal> {
 
     @Override
     public Meal update(Meal meal) {
-        return storage.put(meal.getId(), meal);
+
+        if (storage.containsKey(meal.getId()))
+        {
+            storage.put(meal.getId(), meal);
+            return meal;
+        }
+        return null;
     }
 
     @Override

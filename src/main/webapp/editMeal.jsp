@@ -15,14 +15,13 @@
 </head>
 <body>
 
-<c:set var="meal" value="${meal}"/>
+<jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
 <form method="POST">
     id : <label type="text" name="id" text="<c:out value="${meal.id}"/>"/>
     <br/>
     Описание : <input type="text" name="description" value="<c:out value="${meal.description}"/>"/>
     <br/>
-    Дата/время : <input type="text" name="dateTime"
-                        value="<javatime:format value="${meal.dateTime}" style="MS"/>"/>
+    Дата/время : <input type="datetime-local" name="dateTime" value="${meal.dateTime}" />
     <br/>
     Калории : <input type="text" name="calories" value="<c:out value="${meal.calories}"/>"/> <br/>
 
