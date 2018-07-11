@@ -13,6 +13,4 @@ public interface MealRepository {
     Meal get(int id, Integer userId);
 
     List<Meal> getAll(Integer userId, DateTimeFilter dateTimeFilter);
-
-    List<Meal> getAll(Integer userId);
 }

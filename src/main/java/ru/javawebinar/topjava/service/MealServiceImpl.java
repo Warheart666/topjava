@@ -45,11 +45,11 @@ public class MealServiceImpl implements MealService {
 
     @Override
     public List<Meal> getAll(Integer userId) {
-        return repository.getAll(userId);
+        return repository.getAll(userId, null);
     }
 
     @Override
-    public List<Meal> getAll(Integer userId, DateTimeFilter dateTimeFilter) {
+    public List<Meal> getFiltered(Integer userId, DateTimeFilter dateTimeFilter) {
         return repository.getAll(userId, dateTimeFilter);
     }
 }

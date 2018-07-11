@@ -15,11 +15,11 @@ public class UsersUtil {
         Set<Role> admins = new HashSet<>();
         admins.add(Role.ROLE_ADMIN);
 
-        users.add(new User(0, "FirstUsername", "firstEmail@mail.jv", "adminpass", 2000, true, admins));
-        users.add(new User(1, "SecondUsername", "secEmail@mail.jv", "admin2pass", 3000, true, admins));
-        users.add(new User(2, "SUser", "secEmail@mail3.jv", "admin2pass", 3000, false, admins));
-        users.add(new User(3, "name4", "secEmail@mail2.jv", "admin2pass", 3000, true, admins));
-        users.add(new User(4, "1name", "secEmail@mail1.jv", "pass", 3000, false, admins));
+        users.add(new User(null, "FirstUsername", "firstEmail@mail.jv", "adminpass", 2000, true, admins));
+        users.add(new User(null, "SecondUsername", "secEmail@mail.jv", "admin2pass", 3000, true, admins));
+        users.add(new User(null, "SUser", "secEmail@mail3.jv", "admin2pass", 3000, false, admins));
+        users.add(new User(null, "name4", "secEmail@mail2.jv", "admin2pass", 3000, true, admins));
+        users.add(new User(null, "1name", "secEmail@mail1.jv", "pass", 3000, false, admins));
 
         return users;
     }

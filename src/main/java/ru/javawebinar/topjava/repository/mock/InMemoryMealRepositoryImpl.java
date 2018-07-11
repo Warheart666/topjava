@@ -6,13 +6,13 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.DateTimeFilter;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Repository
 public class InMemoryMealRepositoryImpl implements MealRepository {
@@ -40,18 +40,18 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     public boolean delete(int id, Integer userId) {
         Meal meal = repository.get(id);
 
-        if (meal.getUserId() == userId) {
-            return repository.remove(id, meal);
+        if (meal != null && meal.getUserId() == userId) {
+            repository.remove(id);
+            return true;
         } else
             return false;
-
     }
 
     @Override
     public Meal get(int id, Integer userId) {
 
-        Meal meal = repository.getOrDefault(id, new Meal(LocalDateTime.now(), "", 0));
-        if (meal.getUserId() == userId)
+        Meal meal = repository.get(id);
+        if (meal != null && meal.getUserId() == userId)
             return meal;
         else
             return null;
@@ -60,22 +60,22 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     @Override
     public List<Meal> getAll(Integer userId, DateTimeFilter dateTimeFilter) {
 
-        return repository.values().
+        Stream<Meal> mealStream = repository.values().
                 stream().
                 filter(meal -> meal.getUserId() == userId).
-                filter(meal -> DateTimeUtil.isBetween(meal.getDate(), dateTimeFilter.getStartDate(), dateTimeFilter.getEndDate())).
-                filter(meal -> DateTimeUtil.isBetween(meal.getTime(), dateTimeFilter.getStartTime(), dateTimeFilter.getEndTime())).
-                sorted(Comparator.comparing(Meal::getDateTime).reversed()).
-                collect(Collectors.toList());
+                sorted(Comparator.comparing(Meal::getDateTime).reversed());
+
+        if (dateTimeFilter != null)
+            mealStream = filterStream(mealStream, dateTimeFilter);
+
+        return mealStream.collect(Collectors.toList());
+
+
     }
 
-    @Override
-    public List<Meal> getAll(Integer userId) {
-        return repository.values().
-                stream().
-                filter(meal -> meal.getUserId() == userId).
-                sorted(Comparator.comparing(Meal::getDateTime).reversed()).
-                collect(Collectors.toList());
+    private Stream<Meal> filterStream(Stream<Meal> stream, DateTimeFilter dateTimeFilter) {
+        return stream.filter(meal -> DateTimeUtil.isBetween(meal.getDate(), dateTimeFilter.getStartDate(), dateTimeFilter.getEndDate())).
+                filter(meal -> DateTimeUtil.isBetween(meal.getTime(), dateTimeFilter.getStartTime(), dateTimeFilter.getEndTime()));
     }
 
 }

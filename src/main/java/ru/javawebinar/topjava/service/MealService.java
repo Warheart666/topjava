@@ -18,5 +18,5 @@ public interface MealService {
 
     List<Meal> getAll(Integer userId);
 
-    List<Meal> getAll(Integer userId, DateTimeFilter dateTimeFilter);
+    List<Meal> getFiltered(Integer userId, DateTimeFilter dateTimeFilter);
 }

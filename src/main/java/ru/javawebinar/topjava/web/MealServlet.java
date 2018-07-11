@@ -94,7 +94,7 @@ public class MealServlet extends HttpServlet {
                     request.setAttribute("meals", mealRestController.getAll());
                 else {
                     DateTimeFilter dateTimeFilter = new DateTimeFilter(startDate, endDate, startTime, endTime);
-                    request.setAttribute("meals", mealRestController.getAllByDateTimeFilter(dateTimeFilter));
+                    request.setAttribute("meals", mealRestController.getFiltered(dateTimeFilter));
                 }
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;

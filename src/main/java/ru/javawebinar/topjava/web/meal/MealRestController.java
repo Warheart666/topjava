@@ -36,10 +36,9 @@ public class MealRestController {
         return MealsUtil.getWithExceeded(service.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay());
     }
 
-    public List<MealWithExceed> getAllByDateTimeFilter(DateTimeFilter dateTimeFilter) {
-        return MealsUtil.getWithExceeded(service.getAll(SecurityUtil.authUserId(), dateTimeFilter), SecurityUtil.authUserCaloriesPerDay());
+    public List<MealWithExceed> getFiltered(DateTimeFilter dateTimeFilter) {
+        return MealsUtil.getFilteredWithExceeded(service.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay(), dateTimeFilter.getStartTime(), dateTimeFilter.getEndTime());
     }
-
 
     public void delete(int id) {
         service.delete(id, SecurityUtil.authUserId());
