@@ -9,6 +9,8 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
+
 @Service
 public class MealServiceImpl implements MealService {
 
@@ -27,31 +29,27 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public void delete(int id, Integer userId)  {
-        Meal meal =  repository.delete(id, userId);
-        if (meal== null)
-            throw new NotFoundException("No data found!");
+    public void delete(int id, Integer userId) throws NotFoundException {
+        checkNotFoundWithId(repository.delete(id, userId), id);
     }
 
     @Override
-    public Meal get(int id, Integer userId)  {
-        Meal meal = repository.get(id, userId);
-
-        if (meal != null)
-            return meal;
-        else
-            throw new NotFoundException("No data found!");
+    public Meal get(int id, Integer userId) throws NotFoundException {
+        return checkNotFoundWithId(repository.get(id, userId), id);
     }
 
     @Override
-    public void update(Meal meal, Integer userId) {
-        Meal meal1 = repository.save(meal, userId);
-        if (meal== null)
-            throw new NotFoundException("No data found!");
+    public void update(Meal meal, Integer userId) throws NotFoundException {
+        checkNotFoundWithId(repository.save(meal, userId), meal.getId());
+    }
+
+    @Override
+    public List<Meal> getAll(Integer userId) {
+        return repository.getAll(userId);
     }
 
     @Override
     public List<Meal> getAll(Integer userId, DateTimeFilter dateTimeFilter) {
-        return (List<Meal>) repository.getAll(userId,dateTimeFilter);
+        return repository.getAll(userId, dateTimeFilter);
     }
 }

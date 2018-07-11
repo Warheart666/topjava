@@ -16,5 +16,7 @@ public interface MealService {
 
     void update(Meal meal, Integer userId);
 
+    List<Meal> getAll(Integer userId);
+
     List<Meal> getAll(Integer userId, DateTimeFilter dateTimeFilter);
 }

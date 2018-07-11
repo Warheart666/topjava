@@ -33,12 +33,11 @@ public class MealRestController {
     }
 
     public List<MealWithExceed> getAll() {
-        DateTimeFilter filter = new DateTimeFilter("", "", "", "");
-        return getAll(filter);
+        return MealsUtil.getWithExceeded(service.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay());
     }
 
-    public List<MealWithExceed> getAll(DateTimeFilter dateTimeFilter) {
-        return MealsUtil.getWithExceeded(service.getAll(SecurityUtil.authUserId(), dateTimeFilter), MealsUtil.DEFAULT_CALORIES_PER_DAY);
+    public List<MealWithExceed> getAllByDateTimeFilter(DateTimeFilter dateTimeFilter) {
+        return MealsUtil.getWithExceeded(service.getAll(SecurityUtil.authUserId(), dateTimeFilter), SecurityUtil.authUserCaloriesPerDay());
     }
 
 

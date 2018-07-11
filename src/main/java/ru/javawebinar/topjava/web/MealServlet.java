@@ -6,7 +6,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.DateTimeFilter;
-import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
@@ -16,11 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.sql.Date;
-import java.sql.Time;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 
@@ -28,15 +23,22 @@ public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
     private MealRestController mealRestController;
+    private ConfigurableApplicationContext appCtx;
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        appCtx.close();
+    }
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
 
-        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
-            mealRestController = appCtx.getBean(MealRestController.class);
-            MealsUtil.MEALS.forEach(meal -> mealRestController.create(meal));
-        }
+        this.appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        mealRestController = appCtx.getBean(MealRestController.class);
+        MealsUtil.MEALS.forEach(meal -> mealRestController.create(meal));
+
     }
 
     @Override
@@ -47,8 +49,7 @@ public class MealServlet extends HttpServlet {
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
-                Integer.parseInt(request.getParameter("calories")),
-                SecurityUtil.authUserId()
+                Integer.parseInt(request.getParameter("calories"))
         );
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
@@ -76,7 +77,7 @@ public class MealServlet extends HttpServlet {
             case "create":
             case "update":
                 final Meal meal = "create".equals(action) ?
-                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000, SecurityUtil.authUserId()) :
+                        new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000) :
                         mealRestController.get(getId(request));
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealForm.jsp").forward(request, response);
@@ -86,12 +87,15 @@ public class MealServlet extends HttpServlet {
                 log.info("getAll");
 
                 String startDate = request.getParameterMap().containsKey("startDate") ? request.getParameter("startDate") : "";
-                String endDate =  request.getParameterMap().containsKey("endDate") ? request.getParameter("endDate") : "" ;
-                String startTime =  request.getParameterMap().containsKey("startTime") ? request.getParameter("startTime") :"";
-                String endTime =  request.getParameterMap().containsKey("endTime") ? request.getParameter("endTime") : "";
-
-                DateTimeFilter dateTimeFilter = new DateTimeFilter(startDate,endDate,startTime,endTime);
-                request.setAttribute("meals", mealRestController.getAll(dateTimeFilter));
+                String endDate = request.getParameterMap().containsKey("endDate") ? request.getParameter("endDate") : "";
+                String startTime = request.getParameterMap().containsKey("startTime") ? request.getParameter("startTime") : "";
+                String endTime = request.getParameterMap().containsKey("endTime") ? request.getParameter("endTime") : "";
+                if (startDate.isEmpty() && endDate.isEmpty() && startTime.isEmpty() && endTime.isEmpty())
+                    request.setAttribute("meals", mealRestController.getAll());
+                else {
+                    DateTimeFilter dateTimeFilter = new DateTimeFilter(startDate, endDate, startTime, endTime);
+                    request.setAttribute("meals", mealRestController.getAllByDateTimeFilter(dateTimeFilter));
+                }
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }

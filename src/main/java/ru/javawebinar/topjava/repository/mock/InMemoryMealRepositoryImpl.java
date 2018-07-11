@@ -5,9 +5,11 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.DateTimeFilter;
 import ru.javawebinar.topjava.util.DateTimeUtil;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
-import java.util.Collection;
+import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,10 +24,11 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     public Meal save(Meal meal, Integer userId) {
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
+            meal.setUserId(SecurityUtil.authUserId());
             repository.put(meal.getId(), meal);
             return meal;
         } else {
-            if (isUsersAreEqual(repository.get(meal.getId()).getUserId(), userId))
+            if (repository.get(meal.getId()).getUserId() == userId)
                 return repository.put(meal.getId(), meal);
             else
                 return null;
@@ -35,47 +38,45 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     }
 
     @Override
-    public Meal delete(int id, Integer userId) {
+    public boolean delete(int id, Integer userId) {
         Meal meal = repository.get(id);
 
-        if (isUsersAreEqual(meal.getUserId(), userId) && meal != null)
-            return repository.remove(id);
-        else
-            return null;
+        if (meal.getUserId() == userId) {
+            return repository.remove(id, meal);
+        } else
+            return false;
 
     }
 
     @Override
     public Meal get(int id, Integer userId) {
 
-        Meal meal = repository.get(id);
-        if (isUsersAreEqual(meal.getUserId(), userId) && meal != null)
+        Meal meal = repository.getOrDefault(id, new Meal(LocalDateTime.now(), "", 0));
+        if (meal.getUserId() == userId)
             return meal;
         else
             return null;
     }
 
     @Override
-    public Collection<Meal> getAll(Integer userId, DateTimeFilter dateTimeFilter) {
+    public List<Meal> getAll(Integer userId, DateTimeFilter dateTimeFilter) {
 
-        if (dateTimeFilter == null)
-            return repository.values().
-                    stream().
-                    filter(meal -> isUsersAreEqual(meal.getUserId(), userId)).
-                    sorted(Comparator.comparing(Meal::getDateTime).reversed()).
-                    collect(Collectors.toList());
-        else
-            return repository.values().
-                    stream().
-                    filter(meal -> isUsersAreEqual(meal.getUserId(), userId)).
-                    filter(meal -> DateTimeUtil.isBetweenDate(meal.getDate(),dateTimeFilter.getStartDate(),dateTimeFilter.getEndDate())).
-                    filter(meal -> DateTimeUtil.isBetween(meal.getTime(),dateTimeFilter.getStartTime(),dateTimeFilter.getEndTime())).
-                    sorted(Comparator.comparing(Meal::getDateTime).reversed()).
-                    collect(Collectors.toList());
+        return repository.values().
+                stream().
+                filter(meal -> meal.getUserId() == userId).
+                filter(meal -> DateTimeUtil.isBetweenDate(meal.getDate(), dateTimeFilter.getStartDate(), dateTimeFilter.getEndDate())).
+                filter(meal -> DateTimeUtil.isBetween(meal.getTime(), dateTimeFilter.getStartTime(), dateTimeFilter.getEndTime())).
+                sorted(Comparator.comparing(Meal::getDateTime).reversed()).
+                collect(Collectors.toList());
     }
 
-    private boolean isUsersAreEqual(int repId, int authId) {
-        return repId == authId;
+    @Override
+    public List<Meal> getAll(Integer userId) {
+        return repository.values().
+                stream().
+                filter(meal -> meal.getUserId() == userId).
+                sorted(Comparator.comparing(Meal::getDateTime).reversed()).
+                collect(Collectors.toList());
     }
 
 }

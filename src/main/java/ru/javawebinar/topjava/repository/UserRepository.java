@@ -1,7 +1,6 @@
 package ru.javawebinar.topjava.repository;
 
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.util.DateTimeFilter;
 
 import java.util.List;
 
