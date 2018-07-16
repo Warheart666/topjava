@@ -5,12 +5,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.mock.InMemoryUserRepositoryImpl;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
+import ru.javawebinar.topjava.web.user.AbstractUserController;
 import ru.javawebinar.topjava.web.user.AdminRestController;
 
 import java.util.Collection;
@@ -19,7 +21,8 @@ import static ru.javawebinar.topjava.UserTestData.ADMIN;
 
 @ContextConfiguration("classpath:spring/spring-app.xml")
 @RunWith(SpringRunner.class)
-public class InMemoryAdminRestControllerSpringTest {
+@Controller
+public class InMemoryAdminRestControllerSpringTest extends AbstractUserController {
 
     @Autowired
     private AdminRestController controller;
