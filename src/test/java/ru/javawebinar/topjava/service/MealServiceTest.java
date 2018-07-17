@@ -10,7 +10,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.web.SecurityUtil;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.MealTestData.*;
+import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
@@ -38,51 +39,51 @@ public class MealServiceTest {
     @Autowired
     MealService mealService;
 
-    @Test
+    @Test(expected = NotFoundException.class)
     public void get() {
         Meal meal = mealService.get(MEAL1_ID, 666);
         MEAL1.setId(MEAL1_ID);
         assertMatch(meal, MEAL1);
     }
 
-    @Test
+    @Test(expected = NotFoundException.class)
     public void delete() {
         mealService.delete(MEAL1_ID, 777);
-        assertMatch(mealService.getAll(SecurityUtil.authUserId()), MEAL2);
+        assertMatch(mealService.getAll(USER_ID), MEAL2);
     }
 
     @Test
     public void getBetweenDates() {
-        List<Meal> meals = mealService.getBetweenDates(LocalDate.of(2015, Month.MAY, 29), LocalDate.of(2015, Month.MAY, 31), SecurityUtil.authUserId());
+        List<Meal> meals = mealService.getBetweenDates(LocalDate.of(2015, Month.MAY, 29), LocalDate.of(2015, Month.MAY, 31), USER_ID);
         assertMatch(meals, Lists.list(MEAL1, MEAL2).stream().sorted(Comparator.comparing(Meal::getDateTime).reversed()).collect(Collectors.toList()));
     }
 
     @Test
     public void getBetweenDateTimes() {
-        List<Meal> meals = mealService.getBetweenDateTimes(LocalDateTime.of(2015, Month.MAY, 30, 10, 0), LocalDateTime.of(2015, Month.MAY, 30, 11, 0), SecurityUtil.authUserId());
-        assertMatch(meals, mealService.get(MEAL1_ID, SecurityUtil.authUserId()));
+        List<Meal> meals = mealService.getBetweenDateTimes(LocalDateTime.of(2015, Month.MAY, 30, 10, 0), LocalDateTime.of(2015, Month.MAY, 30, 11, 0), USER_ID);
+        assertMatch(meals, mealService.get(MEAL1_ID, USER_ID));
     }
 
     @Test
     public void getAll() {
-        List<Meal> all = mealService.getAll(SecurityUtil.authUserId());
-        assertMatch(all, Lists.list(MEAL1, MEAL2).stream().sorted(Comparator.comparing(Meal::getDateTime).reversed()).collect(Collectors.toList()));
+        List<Meal> all = mealService.getAll(USER_ID);
+        assertMatch(all, MEAL2, MEAL1);
     }
 
-    @Test
+    @Test(expected = NotFoundException.class)
     public void update() {
         Meal updated = mealService.get(MEAL1_ID, 666);
         updated.setCalories(666);
         updated.setDescription("asdasd");
-        mealService.update(updated, SecurityUtil.authUserId());
-        assertMatch(mealService.get(MEAL1_ID, SecurityUtil.authUserId()), updated);
+        mealService.update(updated, USER_ID);
+        assertMatch(mealService.get(MEAL1_ID, USER_ID), updated);
     }
 
     @Test
     public void create() {
         Meal meal = new Meal(LocalDateTime.of(2015, Month.MAY, 30, 11, 0), "Завтрак", 500);
-        Meal createdMeal = mealService.create(meal, SecurityUtil.authUserId());
+        Meal createdMeal = mealService.create(meal, USER_ID);
         meal.setId(createdMeal.getId());
-        assertMatch(mealService.getAll(SecurityUtil.authUserId()), Lists.list(createdMeal, MEAL1, MEAL2).stream().sorted(Comparator.comparing(Meal::getDateTime).reversed()).collect(Collectors.toList()));
+        assertMatch(mealService.getAll(USER_ID), MEAL2, createdMeal, MEAL1);
     }
 }
