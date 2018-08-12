@@ -6,6 +6,7 @@ import org.springframework.util.Assert;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class MealServiceImpl implements MealService {
         return checkNotFoundWithId(repository.get(id, userId), id);
     }
 
+    @Transactional
     @Override
     public void delete(int id, int userId) {
         checkNotFoundWithId(repository.delete(id, userId), id);
@@ -43,11 +45,13 @@ public class MealServiceImpl implements MealService {
         return repository.getAll(userId);
     }
 
+    @Transactional
     @Override
     public void update(Meal meal, int userId) {
         checkNotFoundWithId(repository.save(meal, userId), meal.getId());
     }
 
+    @Transactional
     @Override
     public Meal create(Meal meal, int userId) {
         Assert.notNull(meal, "meal must not be null");

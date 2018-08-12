@@ -56,7 +56,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 
     @Override
     public User get(int id) {
-        List<User> users = jdbcTemplate.query("SELECT * FROM users WHERE id=?", ROW_MAPPER, id);
+        List<User> users = jdbcTemplate.query("SELECT * FROM users us join user_roles u on us.id = u.user_id WHERE us.id=?", ROW_MAPPER, id);
         return DataAccessUtils.singleResult(users);
     }
 
