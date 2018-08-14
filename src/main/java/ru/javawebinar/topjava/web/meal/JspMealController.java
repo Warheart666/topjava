@@ -1,7 +1,5 @@
 package ru.javawebinar.topjava.web.meal;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
-import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,12 +25,6 @@ import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 public class JspMealController extends AbstractMealController {
 
 
-    private static final Logger log = LoggerFactory.getLogger(MealRestController.class);
-
-    private MealService service;
-
-
-
     @Autowired
     public void setService(MealService service) {
         this.service = service;
@@ -42,13 +33,13 @@ public class JspMealController extends AbstractMealController {
 
     @GetMapping
     public String getAll(Model model) {
-        model.addAttribute("meals", MealsUtil.getWithExceeded(service.getAll(SecurityUtil.authUserId()), SecurityUtil.authUserCaloriesPerDay()));
+        model.addAttribute("meals", super.getAll());
         return "meals";
     }
 
 
     @GetMapping("/delete&id={id}")
-    public String delete(@PathVariable("id") int id) {
+    public String remove(@PathVariable("id") int id) {
         service.delete(id, SecurityUtil.authUserId());
         return "redirect:/meals";
     }
@@ -64,17 +55,17 @@ public class JspMealController extends AbstractMealController {
     @GetMapping("/update&id={id}")
     public String getForUpdate(@PathVariable("id") int id, Model model) {
         model.addAttribute("action", "update");
-        model.addAttribute("meal", service.get(id, SecurityUtil.authUserId()));
+        model.addAttribute("meal", super.get(id));
         return "mealForm";
     }
 
-    @PostMapping("/filter")
+    @PostMapping
     public String filter(HttpServletRequest request) {
         LocalDate startDate = parseLocalDate(request.getParameter("startDate"));
         LocalDate endDate = parseLocalDate(request.getParameter("endDate"));
         LocalTime startTime = parseLocalTime(request.getParameter("startTime"));
         LocalTime endTime = parseLocalTime(request.getParameter("endTime"));
-        request.setAttribute("meals", getBetween(startDate, startTime, endDate, endTime,service,log));
+        request.setAttribute("meals", getBetween(startDate, startTime, endDate, endTime));
         return "meals";
     }
 
@@ -86,12 +77,13 @@ public class JspMealController extends AbstractMealController {
         String dsc = request.getParameter("description");
         int calories = Integer.valueOf(request.getParameter("calories"));
 
-        Meal meal = service.get(id, SecurityUtil.authUserId());
+        Meal meal = super.get(id);
+
         meal.setDateTime(localDateTime);
         meal.setDescription(dsc);
         meal.setCalories(calories);
 
-        service.update(meal, SecurityUtil.authUserId());
+        super.update(meal, id);
         return "redirect:/meals";
     }
 
@@ -107,7 +99,7 @@ public class JspMealController extends AbstractMealController {
         meal.setDescription(dsc);
         meal.setCalories(calories);
 
-        service.create(meal, SecurityUtil.authUserId());
+        super.create(meal);
         return "redirect:/meals";
     }
 
