@@ -51,7 +51,9 @@ public class UserServiceImpl implements UserService {
     @Cacheable("users")
     @Override
     public List<User> getAll() {
-        return repository.getAll();
+
+        List<User>  users = repository.getAll();
+        return users;
     }
 
     @CacheEvict(value = "users", allEntries = true)
