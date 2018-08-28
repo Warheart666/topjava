@@ -2,13 +2,14 @@ package ru.javawebinar.topjava.util;
 
 import org.springframework.format.Formatter;
 
+import java.lang.annotation.Annotation;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Locale;
 
 
-public class LocalDateFormatterISO implements Formatter<LocalDate> {
+public class LocalDateFormatterISO implements Formatter<LocalDate>, Annotation {
 
     private DateTimeFormatter formatter = new DateTimeFormatterBuilder().append(DateTimeFormatter.ISO_DATE).toFormatter();
 
@@ -33,4 +34,8 @@ public class LocalDateFormatterISO implements Formatter<LocalDate> {
     }
 
 
+    @Override
+    public Class<? extends Annotation> annotationType() {
+        return this.getClass();
+    }
 }
