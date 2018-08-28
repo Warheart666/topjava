@@ -26,12 +26,12 @@ class InMemoryAdminRestControllerSpringTest {
     private InMemoryUserRepositoryImpl repository;
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws Exception {
         repository.init();
     }
 
     @Test
-    void testDelete() {
+    void testDelete() throws Exception {
         controller.delete(UserTestData.USER_ID);
         Collection<User> users = controller.getAll();
         assertEquals(users.size(), 1);
@@ -39,7 +39,7 @@ class InMemoryAdminRestControllerSpringTest {
     }
 
     @Test
-    void testDeleteNotFound() {
+    void testDeleteNotFound() throws Exception {
         assertThrows(NotFoundException.class, () ->
                 controller.delete(10));
     }

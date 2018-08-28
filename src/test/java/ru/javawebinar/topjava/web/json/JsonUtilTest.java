@@ -10,7 +10,7 @@ import static ru.javawebinar.topjava.MealTestData.*;
 class JsonUtilTest {
 
     @Test
-    void testReadWriteValue() {
+    void testReadWriteValue() throws Exception {
         String json = JsonUtil.writeValue(ADMIN_MEAL1);
         System.out.println(json);
         Meal meal = JsonUtil.readValue(json, Meal.class);
@@ -18,7 +18,7 @@ class JsonUtilTest {
     }
 
     @Test
-    void testReadWriteValues() {
+    void testReadWriteValues() throws Exception {
         String json = JsonUtil.writeValue(MEALS);
         System.out.println(json);
         List<Meal> meals = JsonUtil.readValues(json, Meal.class);

@@ -30,7 +30,7 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    void create() {
+    void create() throws Exception {
         User newUser = new User(null, "New", "new@gmail.com", "newPass", 1555, false, new Date(), Collections.singleton(Role.ROLE_USER));
         User created = service.create(new User(newUser));
         newUser.setId(created.getId());
@@ -38,43 +38,43 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    void duplicateMailCreate() {
+    void duplicateMailCreate() throws Exception {
         assertThrows(DataAccessException.class, () ->
                 service.create(new User(null, "Duplicate", "user@yandex.ru", "newPass", Role.ROLE_USER)));
     }
 
     @Test
-    void delete() {
+    void delete() throws Exception {
         service.delete(USER_ID);
         assertMatch(service.getAll(), ADMIN);
     }
 
     @Test
-    void deletedNotFound() {
+    void deletedNotFound() throws Exception {
         assertThrows(NotFoundException.class, () ->
                 service.delete(1));
     }
 
     @Test
-    void get() {
+    void get() throws Exception {
         User user = service.get(ADMIN_ID);
         assertMatch(user, ADMIN);
     }
 
     @Test
-    void getNotFound() {
+    void getNotFound() throws Exception {
         assertThrows(NotFoundException.class, () ->
                 service.get(1));
     }
 
     @Test
-    void getByEmail() {
+    void getByEmail() throws Exception {
         User user = service.getByEmail("admin@gmail.com");
         assertMatch(user, ADMIN);
     }
 
     @Test
-    void update() {
+    void update() throws Exception {
         User updated = new User(USER);
         updated.setName("UpdatedName");
         updated.setCaloriesPerDay(330);
@@ -84,7 +84,7 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
     }
 
     @Test
-    void getAll() {
+    void getAll() throws Exception {
         List<User> all = service.getAll();
         assertMatch(all, ADMIN, USER);
     }
