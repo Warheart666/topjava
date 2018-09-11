@@ -1,5 +1,8 @@
 package ru.javawebinar.topjava.web;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -12,9 +15,13 @@ import ru.javawebinar.topjava.util.UserUtil;
 import ru.javawebinar.topjava.web.user.AbstractUserController;
 
 import javax.validation.Valid;
+import java.util.Locale;
 
 @Controller
 public class RootController extends AbstractUserController {
+
+    @Autowired
+    private ReloadableResourceBundleMessageSource messageSource;
 
     @GetMapping("/")
     public String root() {
@@ -64,13 +71,18 @@ public class RootController extends AbstractUserController {
 
     @PostMapping("/register")
     public String saveRegister(@Valid UserTo userTo, BindingResult result, SessionStatus status, ModelMap model) {
-        if (result.hasErrors()) {
-            model.addAttribute("register", true);
-            return "profile";
-        } else {
-            super.create(UserUtil.createNewFromTo(userTo));
-            status.setComplete();
-            return "redirect:login?message=app.registered&username=" + userTo.getEmail();
+        try {
+            if (result.hasErrors()) {
+                model.addAttribute("register", true);
+                return "profile";
+            } else {
+                super.create(UserUtil.createNewFromTo(userTo));
+                status.setComplete();
+                return "redirect:login?message=app.registered&username=" + userTo.getEmail();
+            }
+        } catch (
+                DataIntegrityViolationException e) {
+            throw new DataIntegrityViolationException(messageSource.getMessage("email.exists", null, Locale.getDefault()) );
         }
     }
 }

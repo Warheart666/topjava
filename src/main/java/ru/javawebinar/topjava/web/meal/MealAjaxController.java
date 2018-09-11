@@ -20,7 +20,7 @@ import java.util.Locale;
 public class MealAjaxController extends AbstractMealController {
 
     @Autowired
-    ReloadableResourceBundleMessageSource messageSource;
+    private ReloadableResourceBundleMessageSource messageSource;
 
 
     @Override

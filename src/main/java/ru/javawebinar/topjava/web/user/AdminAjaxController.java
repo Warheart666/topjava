@@ -1,5 +1,7 @@
 package ru.javawebinar.topjava.web.user;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -10,10 +12,14 @@ import ru.javawebinar.topjava.util.UserUtil;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/ajax/admin/users")
 public class AdminAjaxController extends AbstractUserController {
+
+    @Autowired
+    private ReloadableResourceBundleMessageSource messageSource;
 
     @Override
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,7 +49,7 @@ public class AdminAjaxController extends AbstractUserController {
                 super.update(userTo, userTo.getId());
             }
         } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException("email уже существует!");
+            throw new DataIntegrityViolationException(messageSource.getMessage("email.exists", null, Locale.getDefault()) );
         }
     }
 
