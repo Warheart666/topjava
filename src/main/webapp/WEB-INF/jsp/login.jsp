@@ -63,13 +63,16 @@
 </div>
 <jsp:include page="fragments/footer.jsp"/>
 <script type="text/javascript">
-<c:if test="${not empty param.username}">
-    setCredentials("${param.username}", "");
-</c:if>
+
+    <c:if test="${not empty param.username}">
+        setCredentials("${param.username}", "");
+    </c:if>
+
     function login(username, password) {
         setCredentials(username, password);
         $("#login_form").submit();
     }
+
     function setCredentials(username, password) {
         $('input[name="username"]').val(username);
         $('input[name="password"]').val(password);

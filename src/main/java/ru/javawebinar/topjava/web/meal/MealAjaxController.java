@@ -52,7 +52,7 @@ public class MealAjaxController extends AbstractMealController {
                 super.update(meal, meal.getId());
             }
         } catch (DataIntegrityViolationException e) {
-            throw new DataIntegrityViolationException(messageSource.getMessage("email.exists", null,Locale.getDefault()) );
+            throw new DataIntegrityViolationException(messageSource.getMessage("meal.exists", null,Locale.getDefault()) );
         }
     }
 
